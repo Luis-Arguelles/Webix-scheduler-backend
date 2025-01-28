@@ -11,4 +11,4 @@ $routes->get('test', function () {
     return 'Test route is working!';
 });
 
-$routes->resource('events', ['controller' => 'EventController', 'filter' => 'cors']);
+$routes->resource('events', ['controller' => 'EventController']);

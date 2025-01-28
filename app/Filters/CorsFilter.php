@@ -2,27 +2,56 @@
 
 namespace App\Filters;
 
+use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\Filters\FilterInterface;
 
 class CorsFilter implements FilterInterface
 {
+    /**
+     * @param array|null $arguments
+     *
+     * @return RequestInterface|ResponseInterface|string|void
+     */
     public function before(RequestInterface $request, $arguments = null)
-    {
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization');
-        header('Access-Control-Max-Age: 86400');
+{
+    /** @var ResponseInterface $response */
+    $response = service('response');
 
-        // Handle preflight (OPTIONS) requests
-        if ($request->getMethod() === 'options') {
-            exit;
-        }
+    // Set your Origin.
+    $response->setHeader('Access-Control-Allow-Origin', 'http://127.0.0.1:5500');
+
+    // Set this header if the client sends Cookies.
+    // $response->setHeader('Access-Control-Allow-Credentials', 'true');
+
+    if ($request->is('OPTIONS')) {
+        $response->setStatusCode(204);
+
+        // Set headers to allow.
+        $response->setHeader(
+            'Access-Control-Allow-Headers',
+            'X-API-KEY, X-Requested-With, Content-Type, Accept, Authorization'
+        );
+
+        // Set methods to allow.
+        $response->setHeader(
+            'Access-Control-Allow-Methods',
+            'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+        );
+
+        // Set how many seconds the results of a preflight request can be cached.
+        $response->setHeader('Access-Control-Max-Age', '3600');
+
+        return $response;
     }
+}
 
+    /**
+     * @param array|null $arguments
+     *
+     * @return ResponseInterface|void
+     */
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // Not needed for CORS
     }
 }
